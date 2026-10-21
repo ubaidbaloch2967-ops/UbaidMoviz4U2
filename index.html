@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ubaid Moviz4U</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;background:#000;color:#fff;font-family:Arial,sans-serif}
+#canvas{position:fixed;inset:0;width:100%;height:100%;z-index:1}
+.box{position:relative;z-index:2;min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:24px}
+h1{margin:0;font-family:Arial Black,Arial,sans-serif;font-weight:900;line-height:.95}
+.ubaid{font-size:clamp(52px,13vw,85px);color:#ff3300;text-shadow:0 0 20px red,0 0 40px orange}
+.moviz{font-size:clamp(32px,8vw,48px);margin-top:8px;color:#ffcc00;text-shadow:0 0 15px orange,0 0 30px red;letter-spacing:3px}
+.tag{margin-top:18px;letter-spacing:1px;font-size:15px}
+.btns{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+a.btn{padding:12px 23px;border:2px solid #00eaff;color:#00eaff;border-radius:30px;text-decoration:none;font-weight:bold}
+a.btn2{border-color:#ffaa00;color:#ffaa00}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<div class="box">
+<h1 class="ubaid">UBAID</h1>
+<h1 class="moviz">MOVIZ4U</h1>
+<div class="tag">Open Website and Enjoy Movies 🍿🎥</div>
+<div class="btns">
+<a class="btn" href="Furiosa.html">Featured Movie</a>
+<a class="btn btn2" href="Movies.html">Explore Trending Movies</a>
+</div>
+</div>
+<script type="module">
+import TubesCursor from "https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js";
+try {
+  const app = TubesCursor(document.getElementById("canvas"), {
+    tubes:{colors:["#00eaff","#ff00ff","#00ff88"],lights:{intensity:200,colors:["#00eaff","#ff00aa","#ffae00","#00ae5d"]}}
+  });
+  function randomColors(){
+    if (app && app.tubes) app.tubes.setColors([`#${Math.floor(Math.random()*16777215).toString(16).padStart(6,"0")}`,`#${Math.floor(Math.random()*16777215).toString(16).padStart(6,"0")}`]);
+  }
+  document.body.addEventListener("click", randomColors);
+} catch (e) { console.warn("Animated background unavailable", e); }
+</script>
+</body>
+</html>

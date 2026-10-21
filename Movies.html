@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Movies - Ubaid Moviz4U</title>
+<style>
+:root{--bg:#08090d;--card:#191a20;--cyan:#00eaff;--pink:#f967fb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:#fff;font-family:Arial,Helvetica,sans-serif}
+.header{position:sticky;top:0;z-index:5;background:#050507;border-bottom:1px solid #252630;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{color:var(--cyan);font-size:20px;font-weight:800;text-decoration:none;letter-spacing:.5px}
+.search{display:flex;gap:8px;flex:1;max-width:420px}
+.search input{min-width:0;width:100%;background:#171820;color:#fff;border:1px solid #393b47;border-radius:9px;padding:11px 12px;font-size:15px}
+button,.btn{border:0;border-radius:9px;padding:10px 13px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.search button{background:var(--cyan);color:#001216}
+h1{font-size:23px;margin:22px 18px 5px}
+.subtitle{color:#a7a9b5;margin:0 18px 8px;font-size:13px}
+.status{padding:12px 18px;color:#bfc3ce;min-height:42px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;padding:12px 14px 28px}
+.card{min-width:0;background:var(--card);border:1px solid #2b2c34;border-radius:13px;overflow:hidden;color:white;text-decoration:none;box-shadow:0 5px 18px #0005;transition:transform .25s ease,border-color .25s ease}
+.card:hover{transform:translateY(-5px) scale(1.015);border-color:var(--cyan)}
+.poster-wrap{overflow:hidden;background:#24252c;aspect-ratio:2/3}
+.poster{width:100%;height:100%;object-fit:cover;display:block;animation:posterFloat 4s ease-in-out infinite alternate;transition:transform .35s ease}
+.card:hover .poster{transform:scale(1.045)}
+@keyframes posterFloat{from{object-position:50% 48%}to{object-position:50% 52%}}
+.card-title{font-size:14px;line-height:1.35;font-weight:700;padding:11px 10px 5px;min-height:48px}
+.meta{font-size:12px;color:#aeb1bd;padding:0 10px 11px}
+.card-actions{padding:0 10px 11px}
+.card-actions button{width:100%;background:var(--pink);color:#190019;font-size:12px}
+.pager{display:flex;justify-content:center;gap:12px;padding:0 16px 35px}
+.pager button{background:#151720;color:var(--cyan);border:1px solid var(--cyan);min-width:95px}
+.pager button:disabled{opacity:.35;cursor:not-allowed}
+.empty{grid-column:1/-1;text-align:center;padding:35px 15px;color:#c3c5cf}
+.modal-backdrop{position:fixed;inset:0;background:#000c;z-index:10;display:none;align-items:center;justify-content:center;padding:18px}
+.modal-backdrop.show{display:flex}
+.modal{width:min(440px,100%);max-height:90vh;overflow:auto;background:#151720;border:1px solid var(--cyan);border-radius:16px;padding:18px;text-align:center;box-shadow:0 0 28px #00eaff22}
+.modal img{width:min(190px,65%);max-height:270px;object-fit:cover;border-radius:10px}
+.modal h2{font-size:20px;margin:12px 0 6px}
+.modal p{font-size:13px;color:#c3c5cf;line-height:1.5}
+.modal-links{display:grid;gap:9px;margin-top:15px}
+.watch{background:#00a9bf;color:#001216}
+.copy{background:#282b37;color:#fff;border:1px solid #464958}
+.close{background:transparent;color:#fff;border:1px solid #555968;width:100%;margin-top:10px}
+
+.collections{display:flex;gap:8px;overflow-x:auto;padding:14px 16px 4px;scrollbar-width:thin}
+.chip{white-space:nowrap;background:#171820;color:#e9eaf1;border:1px solid #343744;border-radius:999px;padding:10px 14px}
+.chip.active,.chip:hover{background:var(--cyan);color:#001216;border-color:var(--cyan)}
+.release-badge{display:inline-block;background:#202530;border:1px solid #42495a;border-radius:8px;padding:8px 10px!important;color:#c9f8ff!important}
+.detail-modal{width:min(850px,100%);text-align:left;padding:18px;position:relative}
+.detail-modal #modal-poster{float:left;width:115px;height:170px;object-fit:cover;margin:0 14px 10px 0}
+.detail-modal h2{padding-top:8px}
+.close-top{position:absolute;right:12px;top:12px;background:#292c38;color:white;border:1px solid #4b5060}
+.detail-modal h3{clear:both;font-size:16px;margin:20px 0 10px;color:var(--cyan)}
+.overview{line-height:1.55}
+.screenshots{display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px}
+.screenshots img{width:190px;aspect-ratio:16/9;object-fit:cover;border-radius:9px;border:1px solid #343744;flex:0 0 auto}
+.trailer-wrap{position:relative;aspect-ratio:16/9;max-width:680px;background:#08090d;border-radius:10px;overflow:hidden}
+.trailer-wrap iframe{width:100%;height:100%;border:0;position:absolute;inset:0}
+.cast-list{display:flex;gap:10px;overflow-x:auto;padding:4px 0 10px}
+.actor-chip{flex:0 0 105px;background:#20222b;border:1px solid #363947;color:white;padding:8px;border-radius:10px;text-align:center;cursor:pointer}
+.actor-chip img{width:72px;height:86px;object-fit:cover;border-radius:7px;display:block;margin:0 auto 6px}
+.actor-chip span{font-size:12px;line-height:1.3;display:block}
+.quality-row{display:flex;gap:8px;flex-wrap:wrap}.quality-row span{border:1px solid #3c5260;background:#15232a;color:#c9f8ff;padding:8px 12px;border-radius:8px;font-weight:700;font-size:12px}
+.quality-note{font-size:12px;color:#aeb1bd}
+.actor-card{cursor:pointer}.actor-card .poster{object-position:top}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));padding-left:20px;padding-right:20px;gap:18px}}
+@media(min-width:900px){.grid{grid-template-columns:repeat(5,minmax(0,1fr));max-width:1400px;margin:auto}}
+</style>
+</head>
+<body>
+<header class="header">
+  <a class="brand" href="index.html">← UBAID MOVIZ4U</a>
+  <form class="search" id="search-form">
+    <input id="search-input" type="search" placeholder="Search movies..." aria-label="Search movies">
+    <button type="submit">Search</button>
+  </form>
+</header>
+<nav class="collections" id="collections" aria-label="Movie collections">
+  <button class="chip active" data-kind="trending">🔥 Trending</button>
+  <button class="chip" data-kind="horror">👻 Horror</button>
+  <button class="chip" data-kind="action">💥 Action</button>
+  <button class="chip" data-kind="adventure">🧭 Adventure</button>
+  <button class="chip" data-kind="comedy">😂 Funny / Comedy</button>
+  <button class="chip" data-kind="old">🏆 Old Is Gold</button>
+  <button class="chip" data-kind="indian">🇮🇳 Indian Movies</button>
+  <button class="chip" data-kind="english">🇺🇸 English Movies</button>
+  <button class="chip" data-kind="actors">⭐ Actors</button>
+</nav>
+<h1 id="page-title">🔥 Trending Movies</h1>
+<p class="subtitle">Full titles, posters, screenshots, cast details and YouTube trailers.</p>
+<div id="status" class="status" role="status">Loading movies…</div>
+<main id="movie-grid" class="grid"></main>
+<div class="pager" id="pager">
+  <button id="prev" type="button" disabled>PREV</button>
+  <button id="next" type="button">NEXT</button>
+</div>
+<div id="movie-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal detail-modal">
+    <button id="close-modal" class="close-top" type="button" aria-label="Close details">✕</button>
+    <img id="modal-poster" src="" alt="Movie poster">
+    <h2 id="modal-title"></h2>
+    <p id="modal-meta"></p>
+    <p id="modal-overview" class="overview"></p>
+    <p id="release-badge" class="release-badge"></p>
+    <h3>📸 Movie screenshots</h3><div id="screenshots" class="screenshots"></div>
+    <h3>▶ Official trailer</h3><div id="trailer-wrap" class="trailer-wrap"><p>Trailer loading…</p></div>
+    <h3>🎭 Cast</h3><div id="cast-list" class="cast-list"></div>
+    <h3>Quality guide</h3>
+    <div class="quality-row"><span>360p</span><span>480p</span><span>720p HD</span><span>1080p Full HD</span></div>
+    <p class="quality-note">These are quality labels, not direct video files. Actual quality depends on the official/licensed service. This site does not label a movie as HD or CAM without a verified source.</p>
+    <a id="official-link" class="btn watch" href="#" target="_blank" rel="noopener noreferrer">Find legal watch options</a>
+    <button id="close-modal-bottom" class="close" type="button">Close details</button>
+  </div>
+</div>
+<footer style="text-align:center;color:#777b88;font-size:12px;padding:0 16px 25px">Movie data and images are provided by TMDB. Trailers are embedded from YouTube when available. This site is not endorsed or certified by TMDB.</footer>
+
+<script>
+const API_KEY = "249f222afb1002186f4d88b2b5418b55";
+const API_BASE = "https://api.themoviedb.org/3";
+const IMAGE_BASE = "https://image.tmdb.org/t/p/w500";
+const BACKDROP_BASE = "https://image.tmdb.org/t/p/w780";
+let page=1, searchTerm="", totalPages=1, activeMovie=null, activeKind="trending", actorMode=false, currentActorId=null;
+const grid=document.getElementById("movie-grid"), statusEl=document.getElementById("status"), titleEl=document.getElementById("page-title");
+const prevBtn=document.getElementById("prev"), nextBtn=document.getElementById("next");
+const labels={trending:"🔥 Trending Movies",horror:"👻 Horror Movies",action:"💥 Action Movies",adventure:"🧭 Adventure Movies",comedy:"😂 Funny / Comedy Movies",old:"🏆 Old Is Gold",indian:"🇮🇳 Indian Movies",english:"🇺🇸 English Movies",actors:"⭐ Popular Actors"};
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function img(path,base=IMAGE_BASE){return path?base+path:"https://placehold.co/400x600/171820/00eaff?text=Image+Unavailable";}
+function yearOf(date){return date?date.slice(0,4):"Year N/A";}
+function setStatus(t){statusEl.textContent=t;}
+function urlFor(kind){
+ const common=`api_key=${API_KEY}&page=${page}&include_adult=false`;
+ if(searchTerm)return `${API_BASE}/search/movie?${common}&query=${encodeURIComponent(searchTerm)}`;
+ if(kind==="actor-movies" && currentActorId)return `${API_BASE}/discover/movie?${common}&with_cast=${currentActorId}&sort_by=popularity.desc`;
+ if(kind==="trending")return `${API_BASE}/trending/movie/week?api_key=${API_KEY}&page=${page}`;
+ if(kind==="horror")return `${API_BASE}/discover/movie?${common}&with_genres=27&sort_by=popularity.desc`;
+ if(kind==="action")return `${API_BASE}/discover/movie?${common}&with_genres=28&sort_by=popularity.desc`;
+ if(kind==="adventure")return `${API_BASE}/discover/movie?${common}&with_genres=12&sort_by=popularity.desc`;
+ if(kind==="comedy")return `${API_BASE}/discover/movie?${common}&with_genres=35&sort_by=popularity.desc`;
+ if(kind==="old")return `${API_BASE}/discover/movie?${common}&primary_release_date.lte=2000-12-31&sort_by=vote_average.desc&vote_count.gte=100`;
+ if(kind==="indian")return `${API_BASE}/discover/movie?${common}&with_original_language=hi&sort_by=popularity.desc`;
+ if(kind==="english")return `${API_BASE}/discover/movie?${common}&with_original_language=en&sort_by=popularity.desc`;
+ return `${API_BASE}/person/popular?${common}`;
+}
+async function loadMovies(){
+ grid.innerHTML=""; actorMode=activeKind==="actors"&&!searchTerm; prevBtn.disabled=true;nextBtn.disabled=true;
+ document.getElementById("pager").style.display=actorMode?"flex":"flex";
+ setStatus("Loading…"); titleEl.textContent=searchTerm?`🔎 Results for “${searchTerm}”`:labels[activeKind];
+ try{
+  const r=await fetch(urlFor(activeKind));if(!r.ok)throw Error("HTTP "+r.status);const data=await r.json();const results=data.results||[];totalPages=Math.min(data.total_pages||1,500);
+  setStatus(results.length?`${data.total_results??results.length} results found`:"No results found.");
+  if(!results.length){grid.innerHTML='<div class="empty">Nothing found. Try another category or search.</div>';return;}
+  results.forEach(item=>{
+   const isPerson=actorMode;const name=isPerson?(item.name||"Unknown actor"):(item.title||item.original_title||"Untitled movie");
+   const poster=img(isPerson?item.profile_path:item.poster_path);
+   const card=document.createElement("article");card.className="card"+(isPerson?" actor-card":"");
+   card.innerHTML=`<div class="poster-wrap"><img class="poster" src="${esc(poster)}" alt="${esc(name)}" loading="lazy"></div><div class="card-title">${esc(name)}</div><div class="meta">${isPerson?`🎭 ${esc((item.known_for_department||"Actor"))}`:`${esc(yearOf(item.release_date))} · ⭐ ${Number(item.vote_average||0).toFixed(1)}`}</div><div class="card-actions"><button type="button">${isPerson?"Show all movies":"View details + trailer"}</button></div>`;
+   card.querySelector("img").addEventListener("error",e=>{e.currentTarget.src="https://placehold.co/400x600/171820/00eaff?text=Image+Unavailable"},{once:true});
+   const action=()=>isPerson?loadActorMovies(item):openMovie(item);card.querySelector("button").addEventListener("click",action);card.addEventListener("click",e=>{if(e.target.tagName!=="BUTTON")action();});grid.appendChild(card);
+  });prevBtn.disabled=page<=1;nextBtn.disabled=page>=totalPages;
+ }catch(e){setStatus("Could not load data. Check internet and TMDB API key.");grid.innerHTML='<div class="empty">Movie data could not load right now. Please refresh later.</div>';console.error(e);}
+}
+async function loadActorMovies(person){
+ searchTerm="";activeKind="actor-movies";currentActorId=person.id;page=1;titleEl.textContent=`🎭 ${person.name} — Movies`;grid.innerHTML="";setStatus(`Loading movies featuring ${person.name}…`);document.querySelectorAll(".chip").forEach(b=>b.classList.remove("active"));
+ try{const r=await fetch(urlFor("actor-movies"));if(!r.ok)throw Error();const data=await r.json();const results=data.results||[];totalPages=Math.min(data.total_pages||1,500);setStatus(`${results.length} movies shown for ${person.name}`);if(!results.length){grid.innerHTML='<div class="empty">No movie list was found for this actor.</div>';return;}results.forEach(movie=>addMovieCard(movie));prevBtn.disabled=page<=1;nextBtn.disabled=page>=totalPages;}catch(e){setStatus("Could not load this actor's movies.");}
+}
+function addMovieCard(movie){const name=movie.title||movie.original_title||"Untitled movie",card=document.createElement("article");card.className="card";card.innerHTML=`<div class="poster-wrap"><img class="poster" src="${esc(img(movie.poster_path))}" alt="${esc(name)} poster" loading="lazy"></div><div class="card-title">${esc(name)}</div><div class="meta">${esc(yearOf(movie.release_date))} · ⭐ ${Number(movie.vote_average||0).toFixed(1)}</div><div class="card-actions"><button type="button">View details + trailer</button></div>`;card.querySelector("button").addEventListener("click",()=>openMovie(movie));card.addEventListener("click",e=>{if(e.target.tagName!=="BUTTON")openMovie(movie)});grid.appendChild(card);}
+async function openMovie(movie){
+ activeMovie=movie;const name=movie.title||movie.original_title||"Movie";document.getElementById("modal-title").textContent=name;document.getElementById("modal-poster").src=img(movie.poster_path);document.getElementById("modal-meta").textContent=`${yearOf(movie.release_date)} · ⭐ ${Number(movie.vote_average||0).toFixed(1)}/10`;
+ document.getElementById("modal-overview").textContent=movie.overview||"No synopsis is available for this title.";
+ const release=movie.release_date?new Date(movie.release_date+"T00:00:00"):null;const now=new Date();let badge="Release status not verified";if(release&&release>now)badge="Upcoming theatrical release · not yet released";else if(release)badge="Released title · HD/CAM source status not independently verified";document.getElementById("release-badge").textContent=badge;
+ document.getElementById("official-link").href="https://www.google.com/search?q="+encodeURIComponent(name+" official streaming rent buy");
+ document.getElementById("screenshots").innerHTML="<p>Loading screenshots…</p>";document.getElementById("trailer-wrap").innerHTML="<p>Searching for an official YouTube trailer…</p>";document.getElementById("cast-list").innerHTML="<p>Loading cast…</p>";document.getElementById("movie-modal").classList.add("show");
+ try{const r=await fetch(`${API_BASE}/movie/${movie.id}/images?api_key=${API_KEY}`);const d=await r.json();const shots=(d.backdrops||[]).slice(0,8);document.getElementById("screenshots").innerHTML=shots.length?shots.map(x=>`<img src="${esc(img(x.file_path,BACKDROP_BASE))}" alt="${esc(name)} movie screenshot" loading="lazy">`).join(""):'<p>No screenshots available for this title.</p>';}catch{document.getElementById("screenshots").innerHTML="<p>Screenshots unavailable right now.</p>";}
+ try{const r=await fetch(`${API_BASE}/movie/${movie.id}/videos?api_key=${API_KEY}`);const d=await r.json();const videos=d.results||[];const trailer=videos.find(v=>v.site==="YouTube"&&v.type==="Trailer"&&v.official)||videos.find(v=>v.site==="YouTube"&&v.type==="Trailer")||videos.find(v=>v.site==="YouTube");document.getElementById("trailer-wrap").innerHTML=trailer?`<iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(trailer.key)}" title="${esc(name)} trailer" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen loading="lazy"></iframe>`:'<p>No YouTube trailer is listed for this title.</p>';}catch{document.getElementById("trailer-wrap").innerHTML="<p>Trailer unavailable right now.</p>";}
+ try{const r=await fetch(`${API_BASE}/movie/${movie.id}/credits?api_key=${API_KEY}`);const d=await r.json();const cast=(d.cast||[]).slice(0,12);document.getElementById("cast-list").innerHTML=cast.length?cast.map(a=>`<button class="actor-chip" data-person="${Number(a.id)}"><img src="${esc(img(a.profile_path))}" alt="${esc(a.name)}" loading="lazy"><span>${esc(a.name)}</span><span style="color:#aeb1bd">${esc(a.character||"")}</span></button>`).join(""):'<p>Cast details unavailable.</p>';document.querySelectorAll(".actor-chip").forEach(b=>b.addEventListener("click",()=>findActor(Number(b.dataset.person))));}catch{document.getElementById("cast-list").innerHTML="<p>Cast unavailable.</p>";}
+}
+async function findActor(id){try{const r=await fetch(`${API_BASE}/person/${id}?api_key=${API_KEY}`);const person=await r.json();closeMovie();await loadActorMovies(person);}catch{}}
+function closeMovie(){document.getElementById("movie-modal").classList.remove("show");document.getElementById("trailer-wrap").innerHTML="";}
+document.getElementById("search-form").addEventListener("submit",e=>{e.preventDefault();searchTerm=document.getElementById("search-input").value.trim();page=1;loadMovies();});
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{activeKind=b.dataset.kind;searchTerm="";document.getElementById("search-input").value="";page=1;document.querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x===b));loadMovies();}));
+prevBtn.addEventListener("click",()=>{if(page>1){page--;loadMovies();window.scrollTo({top:0,behavior:"smooth"});}});nextBtn.addEventListener("click",()=>{if(page<totalPages){page++;loadMovies();window.scrollTo({top:0,behavior:"smooth"});}});
+document.getElementById("close-modal").addEventListener("click",closeMovie);document.getElementById("close-modal-bottom").addEventListener("click",closeMovie);document.getElementById("movie-modal").addEventListener("click",e=>{if(e.target.id==="movie-modal")closeMovie();});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMovie();});
+loadMovies();
+</script>
+</body>
+</html>
